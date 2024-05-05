@@ -1,38 +1,25 @@
+# import files
 from flask import Flask, render_template, request
-import openai
-
+from chatterbot import ChatBot
+from chatterbot.trainers import ChatterBotCorpusTrainer
 
 app = Flask(__name__)
 
-# Set up OpenAI API credentials
-openai.api_key = 'sk-proj-y34vDuAd4ZsWbtPFEBqAT3BlbkFJo7fA1xQFEM6irWVxTciq'
+chatbot = ChatBot('ChatBot')
+trainer = ChatterBotCorpusTrainer(chatbot)
+trainer.train("chatterbot.corpus.english")
 
-# Define the default route to return the index.html file
+
 @app.route("/")
-def index():
+def home():
     return render_template("index.html")
 
-# Define the /api route to handle POST requests
-@app.route("/api", methods=["POST"])
-def api():
-    # Get the message from the POST request
-    message = request.json.get("message")
-    # Send the message to OpenAI's API and receive the response
-    
-    
-    completion = openai.ChatCompletion.create(
-    model="gpt-3.5-turbo",
-    messages=[
-        {"role": "user", "content": message}
-    ]
-    )
-    if completion.choices[0].message!=None:
-        return completion.choices[0].message
 
-    else :
-        return 'Failed to Generate response!'
-    
+@app.route("/get")
+def get_bot_response():
+    userText = request.args.get('msg')
+    return str(chatbot.get_response(userText))
 
-if __name__=='__main__':
+
+if __name__ == "__main__":
     app.run()
-    
