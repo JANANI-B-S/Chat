@@ -1,122 +1,91 @@
 <!DOCTYPE html>
 <html>
+<head>
   <title>ChatBot</title>
-  <head>
-    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
-    <style>
-      body {
-        font-family: monospace;
-      }
-      h1 {
-        background-color: #8080ff;
-        color: black;
-        display: inline-block;
-        font-size: 2em;
-        margin: 0;
-        padding: 10px;
-      }
-      #chatbox {
-        margin-left: auto;
-        margin-right: auto;
-        width: 40%;
-        margin-top: 60px;
-      }
-      #userInput {
-        margin-left: auto;
-        margin-right: auto;
-        width: 40%;
-        margin-top: 60px;
-      }
-      #textInput {
-        width: 90%;
-        border: none;
-        border-bottom: 3px solid black;
-        font-family: monospace;
-        font-size: 17px;
-      }
-      .userText {
-        color: black;
-        font-family: monospace;
-        font-size: 17px;
-        text-align: right;
-        line-height: 30px;
-      }
-      .userText span {
-        background-color: #e699ff;
-        padding: 10px;
-        border-radius: 2px;
-      }
-      .botText {
-        color: black;
-        font-family: monospace;
-        font-size: 17px;
-        text-align: left;
-        line-height: 30px;
-      }
-      .botText span {
-        background-color: #ffdd99;
-        padding: 10px;
-        border-radius: 2px;
-      }
-      #tidbit {
-        position: absolute;
-        bottom: 0;
-        right: 0;
-        width: 300px;
-      }
-      .boxed {
-        margin-left: auto;
-        margin-right: auto;
-        width: 78%;
-        margin-top: 60px;
-        border: 1px solid green;
-      }
-      .box {
-        border: 2px solid black;
-      }
-    </style>
-  </head>
-  <body>
-    <center>
-      <h1>
-        AI ChatBot
-      </h1>
-    </center>
-    <div class="box"></div>
-    <div class="boxed">
-      <div>
-        <div id="chatbox">
-          <p class="botText">
-            <span>Hi! I'm ChatBot</span>
-          </p>
-        </div>
-        <div id="userInput">
-          <input id="textInput" type="text" name="msg" placeholder="Enter message here..." />
-        </div>
-      </div>
-      <script>
-        function getBotResponse() {
-          var rawText = $("#textInput").val();
-          var userHtml = '<p class="userText"><span>' + rawText + "</span></p>";
-          $("#textInput").val("");
-          $("#chatbox").append(userHtml);
-          document
-            .getElementById("userInput")
-            .scrollIntoView({ block: "start", behavior: "smooth" });
-          $.get("/get", { msg: rawText }).done(function(data) {
-            var botHtml = '<p class="botText"><span>' + data + "</span></p>";
-            $("#chatbox").append(botHtml);
-            document
-              .getElementById("userInput")
-              .scrollIntoView({ block: "start", behavior: "smooth" });
-          });
-        }
-        $("#textInput").keypress(function(e) {
-          if (e.which == 13) {
-            getBotResponse();
-          }
-        });
-      </script>
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      margin: 0;
+      padding: 0;
+    }
+    .chat-container {
+      max-width: 800px;
+      margin: 0 auto;
+      padding: 20px;
+    }
+    .chat-box {
+      background-color: #f9f9f9;
+      border: 1px solid #ccc;
+      border-radius: 5px;
+      padding: 10px;
+      margin-bottom: 20px;
+      overflow-y: auto;
+      max-height: 300px;
+    }
+    .user-text {
+      text-align: right;
+      color: #333;
+    }
+    .bot-text {
+      text-align: left;
+      color: #333;
+    }
+    .message {
+      background-color: #ddd;
+      padding: 8px 12px;
+      margin: 5px 0;
+      border-radius: 5px;
+    }
+    .input-text {
+      width: calc(100% - 20px);
+      padding: 10px;
+      border: 1px solid #ccc;
+      border-radius: 5px;
+    }
+    .input-container {
+      margin-top: 20px;
+    }
+  </style>
+</head>
+<body>
+  <div class="chat-container">
+    <div class="chat-box" id="chatbox">
+      <p class="bot-text message">Hi! I'm ChatBot.</p>
     </div>
-  </body>
+    <div class="input-container">
+      <input class="input-text" id="textInput" type="text" name="msg" placeholder="Enter message here..." />
+    </div>
+  </div>
+  <script>
+    $(document).ready(function(){
+      $("#textInput").keypress(function(e) {
+        if (e.which == 13) {
+          getBotResponse();
+        }
+      });
+    });
+
+    function getBotResponse() {
+      var rawText = $("#textInput").val().trim();
+      if (rawText === "") return;
+
+      var userHtml = '<p class="user-text message">' + rawText + "</p>";
+      $("#textInput").val("");
+      $("#chatbox").append(userHtml);
+      scrollToBottom();
+
+      $.get("/get", { msg: rawText }).done(function(data) {
+        var botHtml = '<p class="bot-text message">' + data + "</p>";
+        $("#chatbox").append(botHtml);
+        scrollToBottom();
+      });
+    }
+
+    function scrollToBottom() {
+      var chatbox = document.getElementById("chatbox");
+      chatbox.scrollTop = chatbox.scrollHeight;
+    }
+  </script>
+</body>
 </html>
