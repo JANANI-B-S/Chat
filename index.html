@@ -76,8 +76,13 @@
       scrollToBottom();
 
       $.get("/get", { msg: rawText }).done(function(data) {
-        var botHtml = '<p class="bot-text message">' + data + "</p>";
+        // Ensure data.response is used here
+        var botHtml = '<p class="bot-text message">' + data.response + "</p>";
         $("#chatbox").append(botHtml);
+        scrollToBottom();
+      }).fail(function() {
+        var errorHtml = '<p class="bot-text message">Error: Unable to get response</p>';
+        $("#chatbox").append(errorHtml);
         scrollToBottom();
       });
     }
